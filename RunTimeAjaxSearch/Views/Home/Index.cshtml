@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <select class="custom-select" id="searchoption">
+            <option selected>Choose...</option>
+            <option value="id">ID</option>
+            <option value="firstname">First Name</option>
+            <option value="lastname">Last Name</option>
+            <option value="email">Email</option>
+        </select>
+    </div>
+    <div class="col-md-8 md-form mt-0">
+        <input class="form-control" type="text" placeholder="Search" id="searchtext" aria-label="Search">
+    </div>
+</div>
+<div class="input-group mb-3">
+    
+</div>
+
+
+
+<!-- Search form -->
+
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody id="tbdata">
+        @foreach (var item in ViewBag.cuslist)
+        {
+            <tr>
+                <td>@item.id</td>
+                <td>@item.firstname</td>
+                <td>@item.lastname</td>
+                <td>@item.email</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#searchtext').on('keyup', function () {
+            var searchoption = $('#searchoption').val();
+            var searchtext = $('#searchtext').val();
+
+            $.ajax({
+                type: 'post',
+                url: 'Home/SearchRecord?searchoption=' + searchoption + '&searchtext=' + searchtext,
+                success: function (result) {
+                    $('#tbdata').html("");
+
+                    if (result.length == 0) {
+                        $('#tbdata').append("<tr><td colspan='4'>No Record Matched</td></tr>");
+                    }
+                    else {
+                        $.each(result, function (index, value) {
+                            var data = "<tr><td>" + value.id + "</td>" +
+                                "<td>" + value.firstname + "</td>" +
+                                "<td>" + value.lastname + "</td>" +
+                                "<td>" + value.email + "</td></tr>";
+                            $('#tbdata').append(data);
+                        })
+                    }
+                }
+            })
+        });
+    });
+</script>
